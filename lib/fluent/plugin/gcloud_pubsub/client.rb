@@ -9,7 +9,7 @@ module Fluent
 
     class Publisher
       def initialize(project, key, topic_name, autocreate_topic)
-        pubsub = Google::Cloud::Pubsub.new project: project, keyfile: key
+        pubsub = Google::Cloud::Pubsub.new project_id: project, credentials: key
         @client = pubsub.topic topic_name
         if @client.nil?
           if autocreate_topic
@@ -33,7 +33,7 @@ module Fluent
 
     class Subscriber
       def initialize(project, key, topic_name, subscription_name)
-        pubsub = Google::Cloud::Pubsub.new project: project, keyfile: key
+        pubsub = Google::Cloud::Pubsub.new project_id: project, credentials: key
         topic = pubsub.topic topic_name
         @client = topic.subscription subscription_name
         raise Error.new "subscription:#{subscription_name} does not exist." if @client.nil?
