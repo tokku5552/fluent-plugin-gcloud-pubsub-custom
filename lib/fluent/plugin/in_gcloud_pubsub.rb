@@ -37,8 +37,6 @@ module Fluent::Plugin
     config_param :return_immediately, :bool,    default: true
     desc 'Set number of threads to pull messages.'
     config_param :pull_threads,       :integer, default: 1
-    desc 'Set input format.'
-    config_param :format,             :string,  default: DEFAULT_PARSER_TYPE
     desc 'Set error type when parsing messages fails.'
     config_param :parse_error_action, :enum,    default: :exception, list: [:exception, :warning]
     # for HTTP RPC

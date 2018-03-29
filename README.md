@@ -60,11 +60,13 @@ Use `gcloud_pubsub` output plugin.
   max_messages 1000
   max_total_size 9800000
   max_message_size 4000000
-  buffer_type file
-  buffer_path /path/to/your/buffer
-  flush_interval 1s
-  try_flush_interval 0.1
-  format json
+  <buffer>
+    @type memory
+    flush_interval 1s
+  </buffer>
+  <format>
+    @type json
+  </format>
 </match>
 ```
 
@@ -88,10 +90,6 @@ Use `gcloud_pubsub` output plugin.
     - See https://cloud.google.com/pubsub/quotas#other_limits
 - `max_message_size` (optional, default: `4000000` = `4MB`)
   - Messages exceeding `max_message_size` are not published because Pub/Sub clients cannot receive it.
-- `buffer_type`, `buffer_path`, `flush_interval`, `try_flush_interval`
-  - These are fluentd buffer configuration. See http://docs.fluentd.org/articles/buffer-plugin-overview
-- `format` (optional, default: `json`)
-  - Set output format. See http://docs.fluentd.org/articles/out_file#format
 
 ### Pull messages
 
@@ -109,11 +107,13 @@ Use `gcloud_pubsub` input plugin.
   return_immediately true
   pull_interval 0.5
   pull_threads 2
-  format json
   parse_error_action exception
   enable_rpc true
   rpc_bind 0.0.0.0
   rpc_port 24680
+  <parse>
+    @type json
+  </parse>
 </source>
 ```
 
@@ -143,8 +143,6 @@ Use `gcloud_pubsub` input plugin.
   - Pulling messages by intervals of specified seconds.
 - `pull_threads` (optional, default: `1`)
   - Set number of threads to pull messages.
-- `format` (optional, default: `json`)
-  - Set input format. See format section in http://docs.fluentd.org/articles/in_tail
 - `parse_error_action` (optional, default: `exception`)
   - Set error type when parsing messages fails.
     - `exception`: Raise exception. Messages are not acknowledged.

@@ -25,8 +25,6 @@ module Fluent::Plugin
     config_param :max_total_size,     :integer, :default => 9800000  # 9.8MB
     desc 'Limit bytesize per message.'
     config_param :max_message_size,   :integer, :default => 4000000  # 4MB
-    desc 'Set output format.'
-    config_param :format,             :string,  :default => 'json'
 
     config_section :buffer do
       config_set_default :@type, DEFAULT_BUFFER_TYPE

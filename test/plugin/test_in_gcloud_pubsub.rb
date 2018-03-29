@@ -11,8 +11,6 @@ class GcloudPubSubInputTest < Test::Unit::TestCase
       topic topic-test
       subscription subscription-test
       key key-test
-      format json
-      json_parser yajl
   ]
 
   DEFAULT_HOST = '127.0.0.1'
@@ -55,7 +53,6 @@ class GcloudPubSubInputTest < Test::Unit::TestCase
         return_immediately true
         pull_interval 2
         pull_threads 3
-        format ltsv
         enable_rpc true
         rpc_bind 127.0.0.1
         rpc_port 24681
@@ -70,7 +67,6 @@ class GcloudPubSubInputTest < Test::Unit::TestCase
       assert_equal(1000, d.instance.max_messages)
       assert_equal(true, d.instance.return_immediately)
       assert_equal(3, d.instance.pull_threads)
-      assert_equal('ltsv', d.instance.format)
       assert_equal(true, d.instance.enable_rpc)
       assert_equal('127.0.0.1', d.instance.rpc_bind)
       assert_equal(24681, d.instance.rpc_port)
@@ -82,7 +78,6 @@ class GcloudPubSubInputTest < Test::Unit::TestCase
       assert_equal(100, d.instance.max_messages)
       assert_equal(true, d.instance.return_immediately)
       assert_equal(1, d.instance.pull_threads)
-      assert_equal('json', d.instance.format)
       assert_equal(false, d.instance.enable_rpc)
       assert_equal('0.0.0.0', d.instance.rpc_bind)
       assert_equal(24680, d.instance.rpc_port)
