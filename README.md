@@ -19,6 +19,10 @@ This plugin is forked from https://github.com/mdoi/fluent-plugin-gcloud-pubsub
 - Add a pull style subscription to the topic
 - Download your credential (json) or [set scope on GCE instance](https://cloud.google.com/compute/docs/api/how-tos/authorization)
 
+When using output plugin, you need to grant Pub/Sub Publisher and Pub/Sub Viewer role to IAM.
+
+Also, when using input plugin, you need to grant Pub/Sub Subscriber and Pub/Sub Viewer role to IAM.
+
 ## Requirements
 
 | fluent-plugin-gcloud-pubsub-custom | fluentd | ruby |
