@@ -1,5 +1,10 @@
 ## ChangeLog
 
+### Release 1.0.3 - 2018/03/29
+
+- Bump up google-cloud-pubsub to v0.30.x
+- Make config file Fluentd v1 compatible
+
 ### Release 1.0.2 - 2017/09/11
 
 - Bump up google-cloud-pubsub to v0.27.x
