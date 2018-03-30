@@ -80,6 +80,7 @@ Use `gcloud_pubsub` output plugin.
   - You can also use environment variable such as `GCLOUD_KEYFILE`.
 - `topic` (required)
   - Set topic name to publish.
+  - You can use placeholder in this param. See: https://docs.fluentd.org/v1.0/articles/buffer-section
 - `autocreate_topic` (optional, default: `false`)
   - If set to `true`, specified topic will be created when it doesn't exist.
 - `max_messages` (optional, default: `1000`)

@@ -22,6 +22,10 @@ class GcloudPubSubOutputTest < Test::Unit::TestCase
     Fluent::Test.setup
   end
 
+  setup do
+    @time = event_time('2016-07-09 11:12:13 UTC')
+  end
+
   sub_test_case 'configure' do
     test 'default values are configured' do
       d = create_driver(%[
@@ -75,9 +79,12 @@ class GcloudPubSubOutputTest < Test::Unit::TestCase
         autocreate_topic true
       ])
 
+      @publisher.publish.once
       @pubsub_mock.topic("topic-test").once { nil }
       @pubsub_mock.create_topic("topic-test").once { @publisher }
-      d.run
+      d.run(default_tag: "test") do
+        d.feed(@time, {"a" => "b"})
+      end
     end
 
     test '40x error occurred on connecting to Pub/Sub' do
@@ -88,7 +95,9 @@ class GcloudPubSubOutputTest < Test::Unit::TestCase
       end
 
       assert_raise Google::Cloud::NotFoundError do
-        d.run {}
+        d.run(default_tag: "test") do
+          d.feed(@time, {"a" => "b"})
+        end
       end
     end
 
@@ -99,8 +108,10 @@ class GcloudPubSubOutputTest < Test::Unit::TestCase
         raise Google::Cloud::UnavailableError.new('TEST')
       end
 
-      assert_raise Google::Cloud::UnavailableError do
-        d.run {}
+      assert_raise Fluent::GcloudPubSub::RetryableError do
+        d.run(default_tag: "test") do
+          d.feed(@time, {"a" => "b"})
+        end
       end
     end
 
@@ -110,7 +121,23 @@ class GcloudPubSubOutputTest < Test::Unit::TestCase
       @pubsub_mock.topic('topic-test').once { nil }
 
       assert_raise Fluent::GcloudPubSub::Error do
-        d.run {}
+        d.run(default_tag: "test") do
+          d.feed(@time, {"a" => "b"})
+        end
+      end
+    end
+
+    test 'messages exceeding "max_message_size" are not published' do
+      d = create_driver(%[
+        project project-test
+        topic topic-test
+        key key-test
+        max_message_size 1000
+      ])
+
+      @publisher.publish.times(0)
+      d.run(default_tag: "test") do
+        d.feed(@time, {"a" => "a" * 1000})
       end
     end
   end
@@ -120,10 +147,6 @@ class GcloudPubSubOutputTest < Test::Unit::TestCase
       @publisher = mock!
       @pubsub_mock = mock!.topic(anything) { @publisher }
       stub(Google::Cloud::Pubsub).new { @pubsub_mock }
-    end
-
-    setup do
-      @time = event_time('2016-07-09 11:12:13 UTC')
     end
 
     test 'messages are divided into "max_messages"' do
@@ -152,20 +175,6 @@ class GcloudPubSubOutputTest < Test::Unit::TestCase
         4.times do
           d.feed(@time, {"a" => "a" * 400})
         end
-      end
-    end
-
-    test 'messages exceeding "max_message_size" are not published' do
-      d = create_driver(%[
-        project project-test
-        topic topic-test
-        key key-test
-        max_message_size 1000
-      ])
-
-      @publisher.publish.times(0)
-      d.run(default_tag: "test") do
-        d.feed(@time, {"a" => "a" * 1000})
       end
     end
 
