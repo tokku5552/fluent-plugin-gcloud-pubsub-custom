@@ -1,8 +1,14 @@
 ## ChangeLog
 
+### Release 1.2.0 - 2018/04/24
+
+- Output plugin
+  - Support inject section 
+
 ### Release 1.1.0 - 2018/03/30
 
-- The placeholder is now available in topic param
+- Output plugin
+  - The placeholder is now available in topic param
 
 ### Release 1.0.3 - 2018/03/29
 
