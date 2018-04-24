@@ -1,9 +1,11 @@
 require 'fluent/plugin/output'
-
 require 'fluent/plugin/gcloud_pubsub/client'
+require 'fluent/plugin_helper/inject'
 
 module Fluent::Plugin
   class GcloudPubSubOutput < Output
+    include Fluent::PluginHelper::Inject
+
     Fluent::Plugin.register_output('gcloud_pubsub', self)
 
     helpers :compat_parameters, :formatter
@@ -47,6 +49,7 @@ module Fluent::Plugin
     end
 
     def format(tag, time, record)
+      record = inject_values_to_record(tag, time, record)
       @formatter.format(tag, time, record).to_msgpack
     end
 

@@ -206,5 +206,21 @@ class GcloudPubSubOutputTest < Test::Unit::TestCase
         end
       end
     end
+
+    test 'inject section' do
+      d = create_driver(%[
+        project project-test
+        topic topic-test
+        key key-test
+        <inject>
+          tag_key tag
+        </inject>
+      ])
+      @publisher.publish.once
+      d.run(default_tag: 'test') do
+        d.feed({"foo" => "bar"})
+      end
+      assert_equal({"tag" => 'test', "foo" => "bar"}, JSON.parse(MessagePack.unpack(d.formatted.first)))
+    end
   end
 end
