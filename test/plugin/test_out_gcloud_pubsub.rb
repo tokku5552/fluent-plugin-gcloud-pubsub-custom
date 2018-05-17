@@ -220,7 +220,7 @@ class GcloudPubSubOutputTest < Test::Unit::TestCase
       d.run(default_tag: 'test') do
         d.feed({"foo" => "bar"})
       end
-      assert_equal({"tag" => 'test', "foo" => "bar"}, JSON.parse(MessagePack.unpack(d.formatted.first)))
+      assert_equal({"tag" => 'test', "foo" => "bar"}, JSON.parse(MessagePack.unpack(d.formatted.first)[0]))
     end
   end
 end
