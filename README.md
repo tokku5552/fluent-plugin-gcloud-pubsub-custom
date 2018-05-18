@@ -91,6 +91,8 @@ Use `gcloud_pubsub` output plugin.
     - See https://cloud.google.com/pubsub/quotas#other_limits
 - `max_message_size` (optional, default: `4000000` = `4MB`)
   - Messages exceeding `max_message_size` are not published because Pub/Sub clients cannot receive it.
+- `attribute_keys` (optional, default: `[]`)
+  - Publishing the set fields as attributes.
 
 ### Pull messages
 
@@ -144,6 +146,8 @@ Use `gcloud_pubsub` input plugin.
   - Pulling messages by intervals of specified seconds.
 - `pull_threads` (optional, default: `1`)
   - Set number of threads to pull messages.
+- `attribute_keys` (optional, default: `[]`)
+  - Specify the key of the attribute to be emitted as the field of record.
 - `parse_error_action` (optional, default: `exception`)
   - Set error type when parsing messages fails.
     - `exception`: Raise exception. Messages are not acknowledged.

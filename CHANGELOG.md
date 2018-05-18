@@ -1,5 +1,9 @@
 ## ChangeLog
 
+### Release 1.3.0 - 2018/05/18
+
+- Make attributes available 
+
 ### Release 1.2.0 - 2018/04/24
 
 - Output plugin
