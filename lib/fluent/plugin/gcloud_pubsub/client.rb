@@ -7,6 +7,22 @@ module Fluent
     class RetryableError < Error
     end
 
+    class Message
+      attr_reader :message, :attributes
+      def initialize(message, attributes={})
+        @message = message
+        @attributes = attributes
+      end
+
+      def bytesize()
+        attr_size = 0
+        @attributes.each do |key, val|
+          attr_size += key.bytesize + val.bytesize
+        end
+        @message.bytesize + attr_size
+      end
+    end
+
     class Publisher
       def initialize(project, key, autocreate_topic)
         @pubsub = Google::Cloud::Pubsub.new project_id: project, credentials: key
@@ -32,7 +48,7 @@ module Fluent
       def publish(topic_name, messages)
         topic(topic_name).publish do |batch|
           messages.each do |m|
-            batch.publish m
+            batch.publish m.message, m.attributes
           end
         end
       rescue Google::Cloud::UnavailableError, Google::Cloud::DeadlineExceededError, Google::Cloud::InternalError => ex

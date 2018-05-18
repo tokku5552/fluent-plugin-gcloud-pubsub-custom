@@ -18,12 +18,15 @@ class GcloudPubSubInputTest < Test::Unit::TestCase
 
   class DummyInvalidMsgData
     def data
-      return 'foo:bar'
+      'foo:bar'
     end
   end
   class DummyInvalidMessage
     def message
       DummyInvalidMsgData.new
+    end
+    def attributes
+      {"attr_1" => "a", "attr_2" => "b"}
     end
   end
 
@@ -53,6 +56,7 @@ class GcloudPubSubInputTest < Test::Unit::TestCase
         return_immediately true
         pull_interval 2
         pull_threads 3
+        attribute_keys attr-test
         enable_rpc true
         rpc_bind 127.0.0.1
         rpc_port 24681
@@ -67,6 +71,7 @@ class GcloudPubSubInputTest < Test::Unit::TestCase
       assert_equal(1000, d.instance.max_messages)
       assert_equal(true, d.instance.return_immediately)
       assert_equal(3, d.instance.pull_threads)
+      assert_equal(['attr-test'], d.instance.attribute_keys)
       assert_equal(true, d.instance.enable_rpc)
       assert_equal('127.0.0.1', d.instance.rpc_bind)
       assert_equal(24681, d.instance.rpc_port)
@@ -78,6 +83,7 @@ class GcloudPubSubInputTest < Test::Unit::TestCase
       assert_equal(100, d.instance.max_messages)
       assert_equal(true, d.instance.return_immediately)
       assert_equal(1, d.instance.pull_threads)
+      assert_equal([], d.instance.attribute_keys)
       assert_equal(false, d.instance.enable_rpc)
       assert_equal('0.0.0.0', d.instance.rpc_bind)
       assert_equal(24680, d.instance.rpc_port)
@@ -126,12 +132,15 @@ class GcloudPubSubInputTest < Test::Unit::TestCase
   sub_test_case 'emit' do
     class DummyMsgData
       def data
-        return '{"foo": "bar"}'
+        '{"foo": "bar"}'
       end
     end
     class DummyMessage
       def message
         DummyMsgData.new
+      end
+      def attributes
+        {"attr_1" => "a", "attr_2" => "b"}
       end
     end
 
@@ -140,7 +149,7 @@ class GcloudPubSubInputTest < Test::Unit::TestCase
         @tag = tag
       end
       def data
-        return '{"foo": "bar", "test_tag_key": "' + @tag + '"}'
+        '{"foo": "bar", "test_tag_key": "' + @tag + '"}'
       end
     end
     class DummyMessageWithTagKey
@@ -149,6 +158,9 @@ class GcloudPubSubInputTest < Test::Unit::TestCase
       end
       def message
         DummyMsgDataWithTagKey.new @tag
+      end
+      def attributes
+        {"attr_1" => "a", "attr_2" => "b"}
       end
     end
 
@@ -233,6 +245,22 @@ class GcloudPubSubInputTest < Test::Unit::TestCase
       d = create_driver
       d.run(expect_emits: 1, timeout: 3)
       assert_true d.events.empty?
+    end
+
+    test 'with attributes' do
+      messages = Array.new(1, DummyMessage.new)
+      @subscriber.pull(immediate: true, max: 100).at_least(1) { messages }
+      @subscriber.acknowledge(messages).at_least(1)
+
+      d = create_driver("#{CONFIG}\nattribute_keys attr_1")
+      d.run(expect_emits: 1, timeout: 3)
+      emits = d.events
+
+      assert(1 <= emits.length)
+      emits.each do |tag, time, record|
+        assert_equal("test", tag)
+        assert_equal({"foo" => "bar", "attr_1" => "a"}, record)
+      end
     end
 
     test 'invalid messages with parse_error_action warning' do

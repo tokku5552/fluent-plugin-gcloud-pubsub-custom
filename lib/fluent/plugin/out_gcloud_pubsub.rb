@@ -27,6 +27,8 @@ module Fluent::Plugin
     config_param :max_total_size,     :integer, :default => 9800000  # 9.8MB
     desc 'Limit bytesize per message.'
     config_param :max_message_size,   :integer, :default => 4000000  # 4MB
+    desc 'Publishing the set field as an attribute'
+    config_param :attribute_keys,     :array,   :default => []
 
     config_section :buffer do
       config_set_default :@type, DEFAULT_BUFFER_TYPE
@@ -50,7 +52,11 @@ module Fluent::Plugin
 
     def format(tag, time, record)
       record = inject_values_to_record(tag, time, record)
-      @formatter.format(tag, time, record).to_msgpack
+      attributes = {}
+      @attribute_keys.each do |key|
+        attributes[key] = record.delete(key)
+      end
+      [@formatter.format(tag, time, record), attributes].to_msgpack
     end
 
     def formatted_to_msgpack_binary?
@@ -67,7 +73,8 @@ module Fluent::Plugin
       messages = []
       size = 0
 
-      chunk.msgpack_each do |msg|
+      chunk.msgpack_each do |msg, attr|
+        msg = Fluent::GcloudPubSub::Message.new(msg, attr)
         if msg.bytesize > @max_message_size
           log.warn 'Drop a message because its size exceeds `max_message_size`', size: msg.bytesize
           next
