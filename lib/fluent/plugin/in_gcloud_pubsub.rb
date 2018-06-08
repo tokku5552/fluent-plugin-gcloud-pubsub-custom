@@ -233,9 +233,9 @@ module Fluent::Plugin
           else
             case @parse_error_action
             when :exception
-              raise FailedParseError.new "pattern not match: #{line.inspect}"
+              raise FailedParseError.new "pattern not match: #{line}"
             else
-              log.warn 'pattern not match', record: line.inspect
+              log.warn 'pattern not match', record: line
             end
           end
         end
