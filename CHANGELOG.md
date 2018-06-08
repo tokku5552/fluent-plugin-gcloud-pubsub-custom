@@ -1,5 +1,10 @@
 ## ChangeLog
 
+### Release 1.3.1 - 2018/06/08
+
+- Input plugin
+  - Dumps raw string to logs for parsing errors
+
 ### Release 1.3.0 - 2018/05/18
 
 - Make attributes available 
