@@ -59,8 +59,12 @@ module Fluent
     class Subscriber
       def initialize(project, key, topic_name, subscription_name)
         pubsub = Google::Cloud::Pubsub.new project_id: project, credentials: key
-        topic = pubsub.topic topic_name
-        @client = topic.subscription subscription_name
+        if topic_name.nil?
+          @client = pubsub.subscription subscription_name
+        else
+          topic = pubsub.topic topic_name
+          @client = topic.subscription subscription_name
+        end
         raise Error.new "subscription:#{subscription_name} does not exist." if @client.nil?
       end
 
