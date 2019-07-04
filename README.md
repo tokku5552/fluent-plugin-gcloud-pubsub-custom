@@ -133,8 +133,8 @@ Use `gcloud_pubsub` input plugin.
   - Set your credential file path.
   - Running fluentd on GCP, you can use scope instead of specifying this.
   - You can also use environment variable such as `GCLOUD_KEYFILE`.
-- `topic` (required)
-  - Set topic name to pull.
+- `topic` (optional)
+  - Set topic name that the subscription belongs to.
 - `subscription` (required)
   - Set subscription name to pull.
 - `max_messages` (optional, default: `100`)
