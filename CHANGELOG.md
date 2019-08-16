@@ -1,5 +1,10 @@
 ## ChangeLog
 
+### Release 1.3.2 - 2019/08/16
+
+- Input plugin
+  - Make `topic` parameter optional
+
 ### Release 1.3.1 - 2018/06/08
 
 - Input plugin
