@@ -20,7 +20,7 @@ module Fluent::Plugin
     desc 'Set topic name to publish.'
     config_param :topic,              :string
     desc "Set your dest GCP project if publishing cross project"
-    config_param :dest_project,    :string, :default => nil
+    config_param :dest_project,       :string,  :default => nil
     desc "If set to `true`, specified topic will be created when it doesn't exist."
     config_param :autocreate_topic,   :bool,    :default => false
     desc 'Publishing messages count per request to Cloud Pub/Sub.'
