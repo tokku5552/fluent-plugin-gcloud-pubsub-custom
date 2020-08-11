@@ -1,5 +1,12 @@
 ## ChangeLog
 
+### Release 1.4.0 - 2020/08/11
+
+- Bump up google-cloud-pubsub to v0.39.x
+  - In preparation for updating to v1.x
+- Output plugin
+  - Add `dest_project` parameter
+
 ### Release 1.3.2 - 2019/08/16
 
 - Input plugin
