@@ -107,7 +107,7 @@ class GcloudPubSubOutputTest < Test::Unit::TestCase
       ])
 
       @publisher.publish.once
-      @pubsub_mock.topic("topic-test", {:project=>"dest-project-test"}).once
+      @pubsub_mock.topic("topic-test", {:project=>"dest-project-test"}).once { @publisher }
       d.run(default_tag: "test") do
         d.feed(@time, {"a" => "b"})
       end
