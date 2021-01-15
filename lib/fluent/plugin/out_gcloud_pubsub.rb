@@ -31,6 +31,8 @@ module Fluent::Plugin
     config_param :max_message_size,   :integer, :default => 4000000  # 4MB
     desc 'Publishing the set field as an attribute'
     config_param :attribute_keys,     :array,   :default => []
+    desc 'Set service endpoint'
+    config_param :endpoint, :string, :default => nil
 
     config_section :buffer do
       config_set_default :@type, DEFAULT_BUFFER_TYPE
@@ -49,7 +51,7 @@ module Fluent::Plugin
 
     def start
       super
-      @publisher = Fluent::GcloudPubSub::Publisher.new @project, @key, @autocreate_topic, @dest_project
+      @publisher = Fluent::GcloudPubSub::Publisher.new @project, @key, @autocreate_topic, @dest_project, @endpoint
     end
 
     def format(tag, time, record)

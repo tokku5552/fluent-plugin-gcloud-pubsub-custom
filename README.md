@@ -60,6 +60,7 @@ Use `gcloud_pubsub` output plugin.
   max_messages 1000
   max_total_size 9800000
   max_message_size 4000000
+  endpoint <Endpoint URL>
   <buffer>
     @type memory
     flush_interval 1s
@@ -95,7 +96,8 @@ Use `gcloud_pubsub` output plugin.
   - Messages exceeding `max_message_size` are not published because Pub/Sub clients cannot receive it.
 - `attribute_keys` (optional, default: `[]`)
   - Publishing the set fields as attributes.
-
+- `endpoint`(optional)
+  - Set Pub/Sub service endpoint. For more information, see [Service Endpoints](https://cloud.google.com/pubsub/docs/reference/service_apis_overview#service_endpoints)
 ### Pull messages
 
 Use `gcloud_pubsub` input plugin.
