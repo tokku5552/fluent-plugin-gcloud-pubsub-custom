@@ -1,4 +1,4 @@
-name: Fluentd
+name: Test
 
 on:
   push:
