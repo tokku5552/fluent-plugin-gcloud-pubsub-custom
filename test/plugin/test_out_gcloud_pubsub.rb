@@ -1,5 +1,5 @@
 # coding: utf-8
-require_relative "../test_helper"
+require_relative "../helper"
 require "fluent/test/driver/output"
 require "fluent/test/helpers"
 
@@ -80,6 +80,13 @@ class GcloudPubSubOutputTest < Test::Unit::TestCase
       @publisher = mock!
       @pubsub_mock = mock!
       stub(Google::Cloud::Pubsub).new { @pubsub_mock }
+
+      @old_report_on_exception = Thread.report_on_exception
+      Thread.report_on_exception = false
+    end
+
+    teardown do
+      Thread.report_on_exception = @old_report_on_exception
     end
 
     test '"autocreate_topic" is enabled' do
@@ -173,6 +180,13 @@ class GcloudPubSubOutputTest < Test::Unit::TestCase
       @publisher = mock!
       @pubsub_mock = mock!.topic(anything) { @publisher }
       stub(Google::Cloud::Pubsub).new { @pubsub_mock }
+
+      @old_report_on_exception = Thread.report_on_exception
+      Thread.report_on_exception = false
+    end
+
+    teardown do
+      Thread.report_on_exception = @old_report_on_exception
     end
 
     test 'messages are divided into "max_messages"' do
