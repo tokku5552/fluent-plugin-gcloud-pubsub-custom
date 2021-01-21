@@ -98,6 +98,9 @@ Use `gcloud_pubsub` output plugin.
   - Publishing the set fields as attributes.
 - `endpoint`(optional)
   - Set Pub/Sub service endpoint. For more information, see [Service Endpoints](https://cloud.google.com/pubsub/docs/reference/service_apis_overview#service_endpoints)
+- `compression` (optional, default: `nil`)
+  - If set to `gzip`, messages will be compressed with gzip.
+
 ### Pull messages
 
 Use `gcloud_pubsub` input plugin.
@@ -162,6 +165,8 @@ Use `gcloud_pubsub` input plugin.
   - Bind IP address for HTTP RPC.
 - `rpc_port` (optional, default: `24680`)
   - Port for HTTP RPC.
+- `decompression` (optional, default: `nil`)
+  - If set to `gzip`, messages will be decompressed with gzip.
 
 ## Contributing
 

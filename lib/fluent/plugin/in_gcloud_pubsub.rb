@@ -1,6 +1,7 @@
 require 'json'
 require 'webrick'
 
+require 'fluent/plugin/compressable'
 require 'fluent/plugin/input'
 require 'fluent/plugin/parser'
 
@@ -8,6 +9,8 @@ require 'fluent/plugin/gcloud_pubsub/client'
 
 module Fluent::Plugin
   class GcloudPubSubInput < Input
+    include Fluent::Plugin::Compressable
+
     Fluent::Plugin.register_input('gcloud_pubsub', self)
 
     helpers :compat_parameters, :parser, :thread
@@ -48,6 +51,8 @@ module Fluent::Plugin
     config_param :rpc_bind,           :string,  default: '0.0.0.0'
     desc 'Port for HTTP RPC.'
     config_param :rpc_port,           :integer, default: 24680
+    desc 'Decompress messages'
+    config_param :decompression,      :string,  default: nil
 
     config_section :parse do
       config_set_default :@type, DEFAULT_PARSER_TYPE
@@ -114,6 +119,11 @@ module Fluent::Plugin
                      end
 
       @parser = parser_create
+      @decompress = if @decompression == 'gzip'
+                      method(:gzip_decompress)
+                    else
+                      method(:no_decompress)
+                    end
     end
 
     def start
@@ -166,6 +176,14 @@ module Fluent::Plugin
 
     def dynamic_tag(record)
       record.delete(@tag_key) || @tag
+    end
+
+    def gzip_decompress(message)
+      decompress message
+    end
+
+    def no_decompress(message)
+      message
     end
 
     def start_rpc
@@ -221,7 +239,7 @@ module Fluent::Plugin
       end
 
       messages.each do |m|
-        line = m.message.data.chomp
+        line = @decompress.call(m.message.data).chomp
         attributes = m.attributes
         @parser.parse(line) do |time, record|
           if time && record
