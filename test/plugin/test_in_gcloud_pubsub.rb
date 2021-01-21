@@ -1,7 +1,7 @@
 require 'net/http'
 require 'json'
 
-require_relative "../test_helper"
+require_relative "../helper"
 require "fluent/test/driver/input"
 
 class GcloudPubSubInputTest < Test::Unit::TestCase

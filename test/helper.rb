@@ -10,22 +10,14 @@ end
 require 'test/unit'
 require "test/unit/rr"
 
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
-$LOAD_PATH.unshift(File.dirname(__FILE__))
+$LOAD_PATH.unshift(File.expand_path("../../", __FILE__))
 
-require 'fluent/test'
-unless ENV.has_key?('VERBOSE')
-  nulllogger = Object.new
-  nulllogger.instance_eval {|obj|
-    def method_missing(method, *args)
-      # pass
-    end
-  }
-  $log = nulllogger
-end
+require "fluent/test"
+require "fluent/test/driver/output"
+require "fluent/test/helpers"
 
 require 'fluent/plugin/in_gcloud_pubsub'
 require 'fluent/plugin/out_gcloud_pubsub'
 
-class Test::Unit::TestCase
-end
+Test::Unit::TestCase.include(Fluent::Test::Helpers)
+Test::Unit::TestCase.extend(Fluent::Test::Helpers)

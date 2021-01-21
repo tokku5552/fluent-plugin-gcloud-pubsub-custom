@@ -1,6 +1,6 @@
 # fluent-plugin-gcloud-pubsub-custom
 
-[![Build Status](https://travis-ci.org/mia-0032/fluent-plugin-gcloud-pubsub-custom.svg?branch=master)](https://travis-ci.org/mia-0032/fluent-plugin-gcloud-pubsub-custom)
+![Test](https://github.com/mia-0032/fluent-plugin-gcloud-pubsub-custom/workflows/Test/badge.svg)
 [![Gem Version](https://badge.fury.io/rb/fluent-plugin-gcloud-pubsub-custom.svg)](http://badge.fury.io/rb/fluent-plugin-gcloud-pubsub-custom)
 
 This plugin is forked from https://github.com/mdoi/fluent-plugin-gcloud-pubsub
