@@ -2,6 +2,7 @@ require 'net/http'
 require 'json'
 
 require_relative "../helper"
+require 'fluent/plugin/compressable'
 require "fluent/test/driver/input"
 
 class GcloudPubSubInputTest < Test::Unit::TestCase
@@ -164,6 +165,22 @@ class GcloudPubSubInputTest < Test::Unit::TestCase
       end
     end
 
+    class DummyMsgDataGzipped
+      include Fluent::Plugin::Compressable
+
+      def data
+        compress '{"foo": "bar"}'
+      end
+    end
+    class DummyMessageGzipped
+      def message
+        DummyMsgDataGzipped.new
+      end
+      def attributes
+        {"attr_1" => "a", "attr_2" => "b"}
+      end
+    end
+
     setup do
       @subscriber = mock!
       @topic_mock = mock!.subscription('subscription-test') { @subscriber }
@@ -260,6 +277,22 @@ class GcloudPubSubInputTest < Test::Unit::TestCase
       emits.each do |tag, time, record|
         assert_equal("test", tag)
         assert_equal({"foo" => "bar", "attr_1" => "a"}, record)
+      end
+    end
+
+    test 'with gzip decompression' do
+      messages = Array.new(1, DummyMessageGzipped.new)
+      @subscriber.pull(immediate: true, max: 100).at_least(1) { messages }
+      @subscriber.acknowledge(messages).at_least(1)
+
+      d = create_driver("#{CONFIG}\ndecompression gzip")
+      d.run(expect_emits: 1, timeout: 3)
+      emits = d.events
+
+      assert_equal(1, emits.length)
+      emits.each do |tag, time, record|
+        assert_equal("test", tag)
+        assert_equal({"foo" => "bar"}, record)
       end
     end
 

@@ -1,10 +1,12 @@
 # coding: utf-8
 require_relative "../helper"
+require 'fluent/plugin/compressable'
 require "fluent/test/driver/output"
 require "fluent/test/helpers"
 
 class GcloudPubSubOutputTest < Test::Unit::TestCase
   include Fluent::Test::Helpers
+  include Fluent::Plugin::Compressable
 
   CONFIG = %[
     project project-test
@@ -261,6 +263,23 @@ class GcloudPubSubOutputTest < Test::Unit::TestCase
         d.feed({"foo" => "bar"})
       end
       assert_equal({"tag" => 'test', "foo" => "bar"}, JSON.parse(MessagePack.unpack(d.formatted.first)[0]))
+    end
+
+    test 'with gzip compression' do
+      d = create_driver(%[
+        project project-test
+        topic topic-test
+        key key-test
+        compression gzip
+      ])
+      test_msg = {"a" => "abc"}
+
+      @publisher.publish.once
+      d.run(default_tag: "test") do
+        d.feed(test_msg)
+      end
+
+      assert_equal(test_msg, JSON.parse(decompress(MessagePack.unpack(d.formatted.first)[0])))
     end
   end
 end

@@ -1,9 +1,11 @@
+require 'fluent/plugin/compressable'
 require 'fluent/plugin/output'
 require 'fluent/plugin/gcloud_pubsub/client'
 require 'fluent/plugin_helper/inject'
 
 module Fluent::Plugin
   class GcloudPubSubOutput < Output
+    include Fluent::Plugin::Compressable
     include Fluent::PluginHelper::Inject
 
     Fluent::Plugin.register_output('gcloud_pubsub', self)
@@ -33,6 +35,8 @@ module Fluent::Plugin
     config_param :attribute_keys,     :array,   :default => []
     desc 'Set service endpoint'
     config_param :endpoint, :string, :default => nil
+    desc 'Compress messages'
+    config_param :compression, :string, :default => nil
 
     config_section :buffer do
       config_set_default :@type, DEFAULT_BUFFER_TYPE
@@ -47,6 +51,11 @@ module Fluent::Plugin
       super
       placeholder_validate!(:topic, @topic)
       @formatter = formatter_create
+      @compress = if @compression == 'gzip'
+                    method(:gzip_compress)
+                  else
+                    method(:no_compress)
+                  end
     end
 
     def start
@@ -60,7 +69,7 @@ module Fluent::Plugin
       @attribute_keys.each do |key|
         attributes[key] = record.delete(key)
       end
-      [@formatter.format(tag, time, record), attributes].to_msgpack
+      [@compress.call(@formatter.format(tag, time, record)), attributes].to_msgpack
     end
 
     def formatted_to_msgpack_binary?
@@ -109,6 +118,14 @@ module Fluent::Plugin
     def publish(topic, messages)
       log.debug "send message topic:#{topic} length:#{messages.length} size:#{messages.map(&:bytesize).inject(:+)}"
       @publisher.publish(topic, messages)
+    end
+
+    def gzip_compress(message)
+      compress message
+    end
+
+    def no_compress(message)
+      message
     end
   end
 end
