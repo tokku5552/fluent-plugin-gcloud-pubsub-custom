@@ -1,5 +1,11 @@
 ## ChangeLog
 
+### Release 1.5.0 - 2021/01/26
+
+- Bump up google-cloud-pubsub to v2.3.x
+- Add `endpoint` parameter
+- Add gzip compression/decompression feature
+
 ### Release 1.4.0 - 2020/08/11
 
 - Bump up google-cloud-pubsub to v0.39.x
