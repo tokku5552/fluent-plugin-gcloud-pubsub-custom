@@ -95,7 +95,9 @@ Use `gcloud_pubsub` output plugin.
 - `max_message_size` (optional, default: `4000000` = `4MB`)
   - Messages exceeding `max_message_size` are not published because Pub/Sub clients cannot receive it.
 - `attribute_keys` (optional, default: `[]`)
-  - Publishing the set fields as attributes.
+  - Publishing the set fields as attributes generated from input message.
+- `attribute_key_values` (optional, default: `{}`)
+  - Publishing the set fields as attributes generated from input params
 - `endpoint`(optional)
   - Set Pub/Sub service endpoint. For more information, see [Service Endpoints](https://cloud.google.com/pubsub/docs/reference/service_apis_overview#service_endpoints)
 - `compression` (optional, default: `nil`)
