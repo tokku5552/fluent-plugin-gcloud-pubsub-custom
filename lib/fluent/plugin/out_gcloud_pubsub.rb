@@ -31,8 +31,10 @@ module Fluent::Plugin
     config_param :max_total_size,     :integer, :default => 9800000  # 9.8MB
     desc 'Limit bytesize per message.'
     config_param :max_message_size,   :integer, :default => 4000000  # 4MB
-    desc 'Publishing the set field as an attribute'
+    desc 'Publishing the set field as an attribute created from input message'
     config_param :attribute_keys,     :array,   :default => []
+    desc 'Publishing the set field as an attribute created from input config params'
+    config_param :attribute_key_values,     :hash,   :default => {}
     desc 'Set service endpoint'
     config_param :endpoint, :string, :default => nil
     desc 'Compress messages'
@@ -70,6 +72,9 @@ module Fluent::Plugin
       attributes = {}
       @attribute_keys.each do |key|
         attributes[key] = record.delete(key)
+      end
+      @attribute_key_values.each do |key, value|
+        attributes[key] = value
       end
       [@compress.call(@formatter.format(tag, time, record)), attributes].to_msgpack
     end
