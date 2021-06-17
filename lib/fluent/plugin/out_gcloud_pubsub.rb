@@ -73,9 +73,7 @@ module Fluent::Plugin
       @attribute_keys.each do |key|
         attributes[key] = record.delete(key)
       end
-      @attribute_key_values.each do |key, value|
-        attributes[key] = value
-      end
+      attributes.merge! @attribute_key_values
       [@compress.call(@formatter.format(tag, time, record)), attributes].to_msgpack
     end
 
