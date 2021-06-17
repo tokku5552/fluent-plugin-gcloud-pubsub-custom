@@ -3,6 +3,8 @@ require_relative "../helper"
 require 'fluent/plugin/compressable'
 require "fluent/test/driver/output"
 require "fluent/test/helpers"
+require 'json'
+require 'msgpack'
 
 class GcloudPubSubOutputTest < Test::Unit::TestCase
   include Fluent::Test::Helpers
@@ -280,6 +282,67 @@ class GcloudPubSubOutputTest < Test::Unit::TestCase
       end
 
       assert_equal(test_msg, JSON.parse(decompress(MessagePack.unpack(d.formatted.first)[0])))
+    end
+
+    test 'with attribute_keys' do
+      d = create_driver(%[
+        project project-test
+        topic topic-test
+        key key-test
+        attribute_keys a,b
+      ])
+
+      @publisher.publish.once
+      d.run(default_tag: "test") do
+        d.feed(@time, {"a" => "foo", "b" => "bar", "c" => "baz"})
+      end
+
+      formatted = MessagePack.unpack(d.formatted[0])
+      message = JSON.parse(formatted[0])
+      assert_equal(message, {"c" => "baz"})
+      attributes = formatted[1]
+      assert_equal(attributes, {"a" => "foo", "b" => "bar"})
+    end
+
+    test 'with attribute_key_values' do
+      d = create_driver(%[
+        project project-test
+        topic topic-test
+        key key-test
+        attribute_key_values {"key1": "value1", "key2": "value2"}
+      ])
+
+      @publisher.publish.once
+      d.run(default_tag: "test") do
+        d.feed(@time, {"a" => "foo", "b" => "bar"})
+      end
+
+      formatted = MessagePack.unpack(d.formatted[0])
+      message = JSON.parse(formatted[0])
+      assert_equal(message, {"a" => "foo", "b" => "bar"})
+      attributes = formatted[1]
+      assert_equal(attributes, {"key1" => "value1", "key2" => "value2"})
+    end
+
+    test 'with attribute_keys and attribute_key_values' do
+      d = create_driver(%[
+        project project-test
+        topic topic-test
+        key key-test
+        attribute_keys a
+        attribute_key_values {"key": "value"}
+      ])
+
+      @publisher.publish.once
+      d.run(default_tag: "test") do
+        d.feed(@time, {"a" => "foo", "b" => "bar"})
+      end
+
+      formatted = MessagePack.unpack(d.formatted[0])
+      message = JSON.parse(formatted[0])
+      assert_equal(message, {"b" => "bar"})
+      attributes = formatted[1]
+      assert_equal(attributes, {"a" => "foo", "key" => "value"})
     end
   end
 end
