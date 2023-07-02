@@ -31,14 +31,18 @@ module Fluent::Plugin
     config_param :max_total_size,     :integer, :default => 9800000  # 9.8MB
     desc 'Limit bytesize per message.'
     config_param :max_message_size,   :integer, :default => 4000000  # 4MB
-    desc 'Publishing the set field as an attribute'
+    desc 'Publishing the set field as an attribute created from input message'
     config_param :attribute_keys,     :array,   :default => []
+    desc 'Publishing the set field as an attribute created from input config params'
+    config_param :attribute_key_values,     :hash,   :default => {}
     desc 'Set service endpoint'
     config_param :endpoint, :string, :default => nil
     desc 'Compress messages'
     config_param :compression, :string, :default => nil
     desc 'Set default emulator_host to use in publish requests'
     config_param :emulator_host, :string, :default => nil
+    desc 'Set default timeout to use in publish requests'
+    config_param :timeout, :integer, :default => nil
 
     config_section :buffer do
       config_set_default :@type, DEFAULT_BUFFER_TYPE
@@ -62,7 +66,7 @@ module Fluent::Plugin
 
     def start
       super
-      @publisher = Fluent::GcloudPubSub::Publisher.new @project, @key, @autocreate_topic, @dest_project, @endpoint, @emulator_host
+      @publisher = Fluent::GcloudPubSub::Publisher.new @project, @key, @autocreate_topic, @dest_project, @endpoint, @timeout, @emulator_host
     end
 
     def format(tag, time, record)
@@ -71,6 +75,7 @@ module Fluent::Plugin
       @attribute_keys.each do |key|
         attributes[key] = record.delete(key)
       end
+      attributes.merge! @attribute_key_values
       [@compress.call(@formatter.format(tag, time, record)), attributes].to_msgpack
     end
 

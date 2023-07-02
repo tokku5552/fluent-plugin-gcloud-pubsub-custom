@@ -62,6 +62,7 @@ Use `gcloud_pubsub` output plugin.
   max_message_size 4000000
   endpoint <Endpoint URL>
   emulator_host <PUBSUB_EMULATOR_HOST>
+  timeout 60
   <buffer>
     @type memory
     flush_interval 1s
@@ -96,13 +97,17 @@ Use `gcloud_pubsub` output plugin.
 - `max_message_size` (optional, default: `4000000` = `4MB`)
   - Messages exceeding `max_message_size` are not published because Pub/Sub clients cannot receive it.
 - `attribute_keys` (optional, default: `[]`)
-  - Publishing the set fields as attributes.
+  - Publishing the set fields as attributes generated from input message.
+- `attribute_key_values` (optional, default: `{}`)
+  - Publishing the set fields as attributes generated from input params
 - `endpoint`(optional)
   - Set Pub/Sub service endpoint. For more information, see [Service Endpoints](https://cloud.google.com/pubsub/docs/reference/service_apis_overview#service_endpoints)
 - `compression` (optional, default: `nil`)
   - If set to `gzip`, messages will be compressed with gzip.
 - `emulator_host`(optional)
   - Host name of the emulator. Defaults to `ENV["PUBSUB_EMULATOR_HOST"]`, see [Testing apps locally with the emulator](https://cloud.google.com/pubsub/docs/emulator#accessing_environment_variables)
+- `timeout` (optional)
+  - Set default timeout to use in publish requests.
 
 ### Pull messages
 

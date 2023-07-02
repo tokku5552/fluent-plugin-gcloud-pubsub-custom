@@ -1,5 +1,11 @@
 ## ChangeLog
 
+### Release 1.6.0 - 2021/06/17
+
+- Output plugin
+  - Add `timeout` feature
+  - Add `attribute_key_values` feature
+
 ### Release 1.5.0 - 2021/01/26
 
 - Bump up google-cloud-pubsub to v2.3.x
