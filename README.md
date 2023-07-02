@@ -105,7 +105,7 @@ Use `gcloud_pubsub` output plugin.
 - `compression` (optional, default: `nil`)
   - If set to `gzip`, messages will be compressed with gzip.
 - `emulator_host`(optional)
-  - Host name of the emulator. Defaults to `ENV["PUBSUB_EMULATOR_HOST"]`, see [Testing apps locally with the emulator](https://cloud.google.com/pubsub/docs/emulator#accessing_environment_variables)
+  - Host name of the emulator. For more information, see [Testing apps locally with the emulator](https://cloud.google.com/pubsub/docs/emulator#accessing_environment_variables)
 - `timeout` (optional)
   - Set default timeout to use in publish requests.
 
