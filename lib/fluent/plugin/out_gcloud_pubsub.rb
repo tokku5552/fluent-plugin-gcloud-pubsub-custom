@@ -39,6 +39,8 @@ module Fluent::Plugin
     config_param :endpoint, :string, :default => nil
     desc 'Compress messages'
     config_param :compression, :string, :default => nil
+    desc 'Set default emulator_host to use in publish requests'
+    config_param :emulator_host, :string, :default => nil
     desc 'Set default timeout to use in publish requests'
     config_param :timeout, :integer, :default => nil
 
@@ -64,7 +66,7 @@ module Fluent::Plugin
 
     def start
       super
-      @publisher = Fluent::GcloudPubSub::Publisher.new @project, @key, @autocreate_topic, @dest_project, @endpoint, @timeout
+      @publisher = Fluent::GcloudPubSub::Publisher.new @project, @key, @autocreate_topic, @dest_project, @endpoint, @timeout, @emulator_host
     end
 
     def format(tag, time, record)

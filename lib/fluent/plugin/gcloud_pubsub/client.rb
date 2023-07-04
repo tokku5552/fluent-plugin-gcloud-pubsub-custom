@@ -24,8 +24,8 @@ module Fluent
     end
 
     class Publisher
-      def initialize(project, key, autocreate_topic, dest_project, endpoint, timeout)
-        @pubsub = Google::Cloud::Pubsub.new project_id: project, credentials: key, endpoint: endpoint, timeout: timeout
+      def initialize(project, key, autocreate_topic, dest_project, endpoint, timeout, emulator_host)
+        @pubsub = Google::Cloud::Pubsub.new project_id: project, credentials: key, endpoint: endpoint,  timeout: timeout, emulator_host: emulator_host
         @autocreate_topic = autocreate_topic
         @dest_project = dest_project
         @topics = {}
